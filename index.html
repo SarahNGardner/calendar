@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Web Page</title>
+    <link rel="stylesheet" href="styles.css">
+    </head>
+    <body>
+        <div class="grid-container">
+  <div class="grid-item">
+
+            <div>
+                <input type="radio" id="monthly" name="views" class="button" onclick=toggleView(id)>
+                <label for="monthly">Monthly</label>
+
+                <input type="radio" id="weekly" name="views" class="button" onclick="toggleView(id); renderWeek()">
+                <label for="weekly">Weekly</label>
+
+                <input type="radio" id="daily" name="views" class="button" onclick="toggleView(id); showTodayDate()">
+                <label for="daily">Daily</label>
+
+                <input type="radio" id="shopping" name="views" class="button">
+                <label for="shopping">Shopping</label>
+                    
+            </div>
+            <div id="viewArea">
+            <div id="monthlyTwo" class="displays" hidden>
+                <div class="calendar-header">
+                    <button id="prev">&#8592;</button>
+                        <h2 id="month-year"></h2>
+                    <button id="next">&#8594;</button>
+            </div>
+            <div class="calendar-body">
+                <div class="day-names">
+                <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div><div>Thu</div><div>Fri</div><div>Sat</div>
+                </div>
+            <div class="days" id="days"></div>
+            </div>
+            </div>
+   
+
+            <div id="weeklyTwo" class="displays" hidden>
+                <div class="calendar weekly-calendar">
+    <div class="calendar-header">
+      <button onclick="previousWeek()">&#8592;</button>
+      <h2 id="week-range"></h2>
+      <button onclick="nextWeek()">&#8594;</button>
+    </div>
+    <div class="calendar-body">
+      <div class="day-names">
+        <div>Sun</div><div>Mon</div><div>Tue</div><div>Wed</div>
+        <div>Thu</div><div>Fri</div><div>Sat</div>
+      </div>
+      <div class="days" id="week-days"></div>
+    </div>
+  </div>
+                </div>
+                <div id="dailyTwo" class="displays" hidden>
+                    <h1 id="today-date"></h1>
+                </div>
+                </div>
+                </div>
+                <div class="grid-item">
+                    <h1>Right Side</h1>
+                    </div>
+
+        </div>
+    <script src="index.js"></script>
+
+    </body>

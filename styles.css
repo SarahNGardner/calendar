@@ -1,0 +1,149 @@
+.grid-container {
+  display: grid;
+  grid-template-columns: 2fr 1fr; /* Two columns, left is twice as wide as right */
+}
+
+.radio-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    input[type="radio"] {
+      display: none; /* hide the default circles */
+    }
+
+  label {
+  margin-top: 20px;
+  padding: 10px 20px;
+  border: 1px solid #444;
+  border-radius: 6px;
+  background-color: #f0f0f0;  /* unselected color */
+  color: black;
+  cursor: pointer;
+  transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+    input[type="radio"]:checked + label {
+      background-color: #4caf50;
+      color: white;
+      border-color: #388e3c;
+      box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    #monthlyTwo {
+        margin-top: 20px;
+        font-size: 3em;
+        font-weight: bold;
+    }
+    #weeklyTwo {
+        margin-top: 20px;
+        font-size: 3em;
+        font-weight: bold;
+    }
+
+    #viewArea {
+      margin-top: 20px;
+        padding: 10px 20px;
+        border: 1px solid #444;
+    }
+
+    .calendar { /* Weekly calendar */
+  background:white;
+  border-radius: 12px;
+  box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  width: 100%;
+  height: 100%;
+  box-sizing: border-box;
+}
+
+.calendar-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.calendar-header h2 {
+  margin: 0;
+  font-size: 1.2rem;
+}
+
+button {
+  background: none;
+  border: none;
+  font-size: 1.2rem;
+  cursor: pointer;
+}
+
+button:hover {
+  color: #007bff;
+}
+
+.day-names, .days { /*shared with both calendars*/
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+  font-size: x-small;
+}
+
+.day-names div,
+.days div { /*shared with both calendars*/
+  border: 1px solid #ddd;
+  box-sizing: border-box;
+  width: 100%;
+  aspect-ratio: 1 / 1; /* makes squares */
+  display: flex;
+  justify-content: center;
+  align-items: top;
+}
+
+.days div:hover {
+  background: #e9ecef;
+}
+
+.days .today {
+  background: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+.weekly-calendar .days {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  text-align: center;
+}
+
+.weekly-calendar .days div {
+  border: 1px solid #ddd;
+  aspect-ratio: 1 / 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  box-sizing: border-box;
+}
+
+  .view-container {
+      position: relative;
+      width: 400px;
+      height: 200px;
+      border: 1px solid #ccc;
+      margin-top: 1rem;
+      overflow: hidden; 
+    }
+
+    .view {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      padding: 1rem;
+      box-sizing: border-box;
+      background: #f9f9f9;
+      display: none; 
+    } 
