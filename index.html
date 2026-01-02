@@ -8,16 +8,18 @@
     </head>
     <body>
         <div class="grid-container">
+                
+
   <div class="grid-item">
 
             <div>
-                <input type="radio" id="monthly" name="views" class="button" onclick=toggleView(id)>
+                <input type="radio" id="monthly" name="views" class="button">
                 <label for="monthly">Monthly</label>
 
-                <input type="radio" id="weekly" name="views" class="button" onclick="toggleView(id); renderWeek()">
+                <input type="radio" id="weekly" name="views" class="button">
                 <label for="weekly">Weekly</label>
 
-                <input type="radio" id="daily" name="views" class="button" onclick="toggleView(id); showTodayDate()">
+                <input type="radio" id="daily" name="views" class="button">
                 <label for="daily">Daily</label>
 
                 <input type="radio" id="shopping" name="views" class="button">
@@ -43,9 +45,9 @@
             <div id="weeklyTwo" class="displays" hidden>
                 <div class="calendar weekly-calendar">
     <div class="calendar-header">
-      <button onclick="previousWeek()">&#8592;</button>
+      <button id="prev-week">&#8592;</button>
       <h2 id="week-range"></h2>
-      <button onclick="nextWeek()">&#8594;</button>
+      <button id="next-week">&#8594;</button>
     </div>
     <div class="calendar-body">
       <div class="day-names">
@@ -63,9 +65,26 @@
                 </div>
                 <div class="grid-item">
                     <h1>Right Side</h1>
+                    <button id="google-signin">Sign in with Google</button>
+                    <div id="calendar-selector"></div>
+
                     </div>
 
         </div>
-    <script src="index.js"></script>
+    <!-- Google Identity Services -->
+
+
+<script async defer src="https://accounts.google.com/gsi/client"></script>
+
+<!-- Google API client -->
+<script src="https://apis.google.com/js/api.js"></script>
+        
+
+            <!-- My stuff -->
+<!-- <script src="scripts/calendar_api.js"></script> -->
+<script type="module" src="ui.js"></script>
+<script type="module" src="calendar.js"></script>
+<script type="module" src="index.js"></script>
+
 
     </body>
