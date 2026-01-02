@@ -127,6 +127,38 @@ button:hover {
   box-sizing: border-box;
 }
 
+.event {
+  font-size: 0.75rem;
+  margin-top: 4px;
+  padding: 2px 4px;
+  background: #e3f2fd;
+  border-radius: 4px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.day-cell {
+  border: 1px solid #ddd;
+  padding: 6px;
+  min-height: 120px;
+}
+
+.date-label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.event {
+  background: #4285f4;
+  color: white;
+  font-size: 12px;
+  padding: 2px 4px;
+  border-radius: 4px;
+  margin-bottom: 2px;
+}
+
+
   .view-container {
       position: relative;
       width: 400px;
