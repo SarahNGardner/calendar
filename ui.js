@@ -43,10 +43,12 @@ document.getElementById("daily").addEventListener("click", () => {
 
 //calendar selector
 export async function renderCalendarSelector() {
+  console.log("ENTER RENDER CALENDAR SELECTOR")
   const container = document.getElementById("calendar-selector");
   container.innerHTML = "";
 
   const calendars = await getUserCalendars();
+  console.log("getting calendars")
 
   calendars.forEach(cal => {
     const label = document.createElement("label");
