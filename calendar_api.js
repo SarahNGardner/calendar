@@ -1,7 +1,7 @@
 // calendar_api.js
 
-const CLIENT_ID = MY_CLIENT_ID
-const API_KEY = MY_API_KEY
+const CLIENT_ID = "CLIENT_ID";
+const API_KEY = "API_KEY";
 const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
 let tokenClient;
 let gapiLoaded = false;
@@ -10,14 +10,13 @@ let initialized = false;
 
 import { renderCalendarSelector } from "./ui.js";
 
-
+/*
 export function initGoogleAuth() {
   return new Promise((resolve) => {
-    // Load GAPI client
     gapi.load("client", async () => {
       await gapi.client.init({
         apiKey: API_KEY,
-      });
+       });
       gapiLoaded = true;
       maybeReady(resolve);
     });
@@ -28,19 +27,47 @@ export function initGoogleAuth() {
       scope: "https://www.googleapis.com/auth/calendar.readonly",
       callback: async (tokenResponse) => {
         console.log("✅ Signed in with Google");
-
-        // 🔑 Attach token to gapi
         gapi.client.setToken(tokenResponse);
-
-        // 🔑 Now safe to render UI
-        await renderCalendarSelector();
+        resolve();
+        //await renderCalendarSelector();
       },
     });
+    tokenClient.requestAccessToken({ prompt: "consent" });
 
     gisLoaded = true;
     maybeReady(resolve);
   });
 }
+*/
+
+export function loadGoogleApis() {
+  return new Promise((resolve) => {
+    gapi.load("client", async () => {
+      await gapi.client.init({ apiKey: API_KEY });
+      resolve();
+    });
+
+    tokenClient = google.accounts.oauth2.initTokenClient({
+      client_id: CLIENT_ID,
+      scope: "https://www.googleapis.com/auth/calendar.readonly",
+      callback: () => {
+        console.log("✅ OAuth callback fired");
+      },
+    });
+  });
+}
+
+export function signIn() {
+  return new Promise((resolve) => {
+    tokenClient.callback = (tokenResponse) => {
+      gapi.client.setToken(tokenResponse);
+      console.log("✅ Token set");
+      resolve();
+    };
+    tokenClient.requestAccessToken({ prompt: "consent" });
+  });
+}
+
 
 
 export async function initCalendarApi() {
@@ -94,6 +121,7 @@ export async function getEventsForCalendars(
 
 
 export async function getUserCalendars() {
+  console.log("Fetching calendars")
   const response = await gapi.client.calendar.calendarList.list();
   return response.result.items;
 }
