@@ -113,18 +113,16 @@ const events = await getEventsForCalendars(
 
       const dateLabel = document.createElement("div");
       dateLabel.textContent = day.getDate();
-      dateLabel.classList.add("date-label");
+      dateLabel.classList.add("days");
       dayDiv.appendChild(dateLabel);
 
-      // 🔹 Filter events for this day
+      // Filter events for this day
       const dayEvents = events.filter(event => {
-        const eventStart = new Date(
-          event.start.dateTime || event.start.date
-        );
+        const eventStart = new Date(event.start.dateTime || event.start.date);
         return eventStart.toDateString() === day.toDateString();
       });
 
-      // 🔹 Render events
+      // Render events
       dayEvents.forEach(event => {
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("event");
