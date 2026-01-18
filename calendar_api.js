@@ -1,7 +1,7 @@
 // calendar_api.js
 
-const CLIENT_ID = "CLIENT_ID";
-const API_KEY = "API_KEY";
+const CLIENT_ID = CONFIG.CLIENT_ID_KEY;
+const API_KEY = CONFIG.API_KEY;
 const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
 let tokenClient;
 let gapiLoaded = false;
@@ -9,6 +9,7 @@ let gisLoaded = false;
 let initialized = false;
 
 import { renderCalendarSelector } from "./ui.js";
+import "./config.js";
 
 /*
 export function initGoogleAuth() {
