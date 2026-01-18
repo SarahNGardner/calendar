@@ -1,3 +1,14 @@
+#sign-in-btn {
+    margin-top: 20px;
+    font-size: .75em;
+    float: right;
+}
+
+#show-calendar-selector {
+    margin-top:20px;
+    
+}
+
 .grid-container {
   display: grid;
   grid-template-columns: 2fr 1fr; /* Two columns, left is twice as wide as right */

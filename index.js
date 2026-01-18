@@ -9,7 +9,7 @@ import {
 } from "./calendar.js";
 
 import { loadGoogleApis, signInWithGoogle, signIn, initCalendarApi} from "./calendar_api.js";
-import { renderCalendarSelector } from "./ui.js";
+import { renderCalendarSelector, showCalendarOptions } from "./ui.js";
 
 
 
@@ -21,19 +21,44 @@ document.getElementById("next").addEventListener("click", nextMonth);
 document.getElementById("prev-week").addEventListener("click", previousWeek);
 document.getElementById("next-week").addEventListener("click", nextWeek);
 
-
-
+//Show Calendars
+document.getElementById("show-calendar-selector").addEventListener("click", showCalendarOptions)
 // Initial default render
 renderCalendar();
 
 async function bootstrap() {
-  await loadGoogleApis();       // load gapi + GIS
-  await signIn();       // load gapi + GIS
-  await initCalendarApi();      // load Calendar API
-  await renderCalendarSelector(); // now safe
+  await loadGoogleApis();
+
+  try {
+    // Attempt silent sign-in
+    await signIn({ interactive: false });
+
+    await initCalendarApi();
+    await renderCalendarSelector();
+
+    hideSignInButton();
+  } catch {
+    console.log("ℹ️ Not signed in yet");
+    showSignInButton();
+  }
 }
 
 bootstrap();
+
+function showSignInButton() {
+document.getElementById("google-signin").addEventListener("click", async () => {
+  try {
+    await signIn({ interactive: true });
+
+    await initCalendarApi();
+    await renderCalendarSelector();
+
+    hideSignInButton();
+  } catch (err) {
+    console.error("Sign-in failed", err);
+  }
+});
+}
 
 //Google Login
 

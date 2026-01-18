@@ -7,6 +7,8 @@ let tokenClient;
 let gapiLoaded = false;
 let gisLoaded = false;
 let initialized = false;
+let isSignedIn = false;
+
 
 import { renderCalendarSelector } from "./ui.js";
 import "./config.js";
@@ -58,17 +60,32 @@ export function loadGoogleApis() {
   });
 }
 
-export function signIn() {
-  return new Promise((resolve) => {
+export function signIn({ interactive = false } = {}) {
+  return new Promise((resolve, reject) => {
     tokenClient.callback = (tokenResponse) => {
+      if (!tokenResponse || !tokenResponse.access_token) {
+        isSignedIn = false;
+        reject("No access token");
+        return;
+      }
+
       gapi.client.setToken(tokenResponse);
-      console.log("✅ Token set");
-      resolve();
+      isSignedIn = true;
+
+      console.log("✅ Signed in with Google");
+      resolve(tokenResponse);
     };
-    tokenClient.requestAccessToken({ prompt: "consent" });
+
+    tokenClient.requestAccessToken({
+      prompt: interactive ? "consent" : ""
+    });
   });
 }
 
+function updateAuthUI(signedIn) {
+  document.getElementById("signin-btn").hidden = signedIn;
+  document.getElementById("signout-msg").hidden = !signedIn;
+}
 
 
 export async function initCalendarApi() {

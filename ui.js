@@ -28,6 +28,17 @@ export function toggleView(selected) {
   document.getElementById(selected + "Two").hidden = false;
 }
 
+export function showCalendarOptions() {
+    let isHidden = document.getElementById("calendar-selector").hidden;
+    if (isHidden) {
+        document.getElementById("calendar-selector").hidden = false;
+    }
+    
+    else {
+        document.getElementById("calendar-selector").hidden = true;
+    }
+}
+
 document.getElementById("monthly").addEventListener("click", () => toggleView("monthly"));
 
 document.getElementById("weekly").addEventListener("click", async () => {
