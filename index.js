@@ -8,7 +8,7 @@ import {
   nextWeek
 } from "./calendar.js";
 
-import { loadGoogleApis, signInWithGoogle, signIn, initCalendarApi } from "./calendar_api.js";
+import { loadGoogleApis, signInWithGoogle, signIn, initCalendarApi} from "./calendar_api.js";
 import { renderCalendarSelector } from "./ui.js";
 
 
@@ -38,7 +38,7 @@ bootstrap();
 //Google Login
 
   //await initGoogleAuth();
-
+/*
 document.addEventListener("DOMContentLoaded", async () => {
   await initGoogleAuth();
 
@@ -46,5 +46,4 @@ document.addEventListener("DOMContentLoaded", async () => {
     .getElementById("google-signin")
     .addEventListener("click", signInWithGoogle);
 });
-
-
+*/
