@@ -3,7 +3,6 @@
 const CLIENT_ID = CONFIG.CLIENT_ID_KEY;
 const API_KEY = CONFIG.API_KEY;
 const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
-const PEOPLE_DISCOVERY_DOC = "https://www.googleapis.com/piper/v1/discover/people.json";
 let tokenClient;
 let gapiLoaded = false;
 let gisLoaded = false;
@@ -54,7 +53,7 @@ export function loadGoogleApis() {
 
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
-      scope: "https://www.googleapis.com/auth/calendar.readonly",
+      scope: "https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/userinfo.profile https://www.googleapis.com/auth/userinfo.email",      
       callback: (tokenResponse) => {
         if (!tokenResponse || !tokenResponse.access_token) {
           isSignedIn = false;
@@ -107,7 +106,27 @@ export function signIn({ interactive = false } = {}) {
   });
 }
 
+export async function getUserInfo() {
+  const token = localStorage.getItem('google_access_token');
+  if (!token) return null;
 
+  try {
+    const response = await fetch('https://www.googleapis.com/oauth2/v3/userinfo', {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) throw new Error('Failed to fetch user info');
+
+    const data = await response.json();
+    // data contains: sub (ID), name, given_name, family_name, picture, email
+    return data;
+  } catch (error) {
+    console.error("Error fetching user info:", error);
+    return null;
+  }
+}
 
 function updateAuthUI(signedIn) {
   document.getElementById("signin-btn").hidden = signedIn;
@@ -120,7 +139,7 @@ export async function initCalendarApi() {
 
   await gapi.client.init({
     apiKey: API_KEY,
-    discoveryDocs: [DISCOVERY_DOC, PEOPLE_DISCOVERY_DOC],
+    discoveryDocs: [DISCOVERY_DOC],
   });
 
   // Re-apply the token if we have one, just in case .init() cleared it
@@ -183,4 +202,26 @@ function maybeReady(resolve) {
 
 export function signInWithGoogle() {
   tokenClient.requestAccessToken({ prompt: "consent" });
+}
+
+export function signOut() {
+  const token = localStorage.getItem('google_access_token');
+
+  if (token) {
+    // 1. Revoke the token so it can't be used again
+    google.accounts.oauth2.revoke(token, () => {
+      console.log('✅ Token revoked at Google');
+    });
+  }
+
+  // 2. Clear our local persistence
+  localStorage.removeItem('google_access_token');
+  localStorage.removeItem('token_expiry');
+
+  // 3. Reset app state
+  isSignedIn = false;
+  
+  // 4. Force a reload or update UI
+  console.log('✅ Signed out locally');
+  window.location.reload(); // Simplest way to reset the whole app state
 }

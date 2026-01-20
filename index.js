@@ -8,7 +8,9 @@ import {
   nextWeek
 } from "./calendar.js";
 
-import { loadGoogleApis, signInWithGoogle, signIn, initCalendarApi} from "./calendar_api.js";
+const signOutBtn = document.getElementById('google-signout');
+
+import { loadGoogleApis, signInWithGoogle, signIn, initCalendarApi, getUserInfo, signOut} from "./calendar_api.js";
 import { renderCalendarSelector, showCalendarOptions } from "./ui.js";
 
 
@@ -30,16 +32,28 @@ async function bootstrap() {
   await loadGoogleApis();
 
   try {
-    // Attempt silent sign-in
     await signIn();
-
+      
+    signOutBtn.style.display = 'block';
+    signOutBtn.onclick = signOut;  
+      
     await initCalendarApi();
-    await renderCalendarSelector();
+    
+    // FETCH AND SHOW USER
+    const user = await getUserInfo();
+    if (user) {
+       console.log(`Signed in as: ${user.name} (${user.email})`);
+       const profileContainer = document.getElementById('user-profile');
+       profileContainer.style.display = 'flex';
+       document.getElementById('user-avatar').src = user.picture;
+       // Example: document.getElementById('user-display').innerText = `Hello, ${user.given_name}`;
+    }
 
-    hideSignInButton();
-  } catch {
-    console.log("ℹ️ Not signed in yet");
-    showSignInButton();
+    await renderCalendarSelector();
+    //hideSignInButton();
+  } catch (err) {
+    console.log("ℹ️ Not signed in yet", err);
+    //showSignInButton();
   }
 }
 
