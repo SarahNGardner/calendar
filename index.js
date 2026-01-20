@@ -31,7 +31,7 @@ async function bootstrap() {
 
   try {
     // Attempt silent sign-in
-    await signIn({ interactive: false });
+    await signIn();
 
     await initCalendarApi();
     await renderCalendarSelector();

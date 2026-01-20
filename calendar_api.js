@@ -3,11 +3,13 @@
 const CLIENT_ID = CONFIG.CLIENT_ID_KEY;
 const API_KEY = CONFIG.API_KEY;
 const DISCOVERY_DOC = "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest";
+const PEOPLE_DISCOVERY_DOC = "https://www.googleapis.com/piper/v1/discover/people.json";
 let tokenClient;
 let gapiLoaded = false;
 let gisLoaded = false;
 let initialized = false;
 let isSignedIn = false;
+let resolveSignInPromise;
 
 
 import { renderCalendarSelector } from "./ui.js";
@@ -53,8 +55,26 @@ export function loadGoogleApis() {
     tokenClient = google.accounts.oauth2.initTokenClient({
       client_id: CLIENT_ID,
       scope: "https://www.googleapis.com/auth/calendar.readonly",
-      callback: () => {
-        console.log("✅ OAuth callback fired");
+      callback: (tokenResponse) => {
+        if (!tokenResponse || !tokenResponse.access_token) {
+          isSignedIn = false;
+          return;
+        }
+
+        // --- PERSISTENCE LOGIC ---
+        localStorage.setItem('google_access_token', tokenResponse.access_token);
+        // Save expiry (current time + expires_in seconds)
+        const expiry = Date.now() + (tokenResponse.expires_in * 1000);
+        localStorage.setItem('token_expiry', expiry);
+        // -------------------------
+
+        gapi.client.setToken(tokenResponse);
+        isSignedIn = true;
+
+        console.log("✅ OAuth callback fired & saved to storage");
+        
+        // Resolve the promise that signIn() is waiting for
+        if (resolveSignInPromise) resolveSignInPromise(tokenResponse);
       },
     });
   });
@@ -62,25 +82,32 @@ export function loadGoogleApis() {
 
 export function signIn({ interactive = false } = {}) {
   return new Promise((resolve, reject) => {
-    tokenClient.callback = (tokenResponse) => {
-      if (!tokenResponse || !tokenResponse.access_token) {
-        isSignedIn = false;
-        reject("No access token");
-        return;
-      }
+    const storedToken = localStorage.getItem('google_access_token');
+    const expiry = localStorage.getItem('token_expiry');
 
-      gapi.client.setToken(tokenResponse);
+    // 1. Check if we have a valid non-expired token in storage
+    if (storedToken && expiry && Date.now() < expiry) {
+      console.log("✅ Found valid session in storage, skipping popup");
+      
+      const tokenObj = { access_token: storedToken };
+      gapi.client.setToken(tokenObj);
       isSignedIn = true;
+      
+      resolve(tokenObj); 
+      return; // Exit here, do not run the code below
+    }
 
-      console.log("✅ Signed in with Google");
-      resolve(tokenResponse);
-    };
+    // 2. If no valid token, we proceed with the Google Auth flow
+    console.log("ℹ️ No valid session, requesting new token...");
+    resolveSignInPromise = resolve; // Store resolve to be called by the tokenClient callback
 
     tokenClient.requestAccessToken({
       prompt: interactive ? "consent" : ""
     });
   });
 }
+
+
 
 function updateAuthUI(signedIn) {
   document.getElementById("signin-btn").hidden = signedIn;
@@ -93,8 +120,14 @@ export async function initCalendarApi() {
 
   await gapi.client.init({
     apiKey: API_KEY,
-    discoveryDocs: [DISCOVERY_DOC],
+    discoveryDocs: [DISCOVERY_DOC, PEOPLE_DISCOVERY_DOC],
   });
+
+  // Re-apply the token if we have one, just in case .init() cleared it
+  const storedToken = localStorage.getItem('google_access_token');
+  if (storedToken) {
+    gapi.client.setToken({ access_token: storedToken });
+  }
 
   initialized = true;
   console.log("✅ Calendar API initialized");
