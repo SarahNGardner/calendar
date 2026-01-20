@@ -1,12 +1,19 @@
 #sign-in-btn {
-    margin-top: 20px;
     font-size: .75em;
-    float: right;
 }
 
 #show-calendar-selector {
     margin-top:20px;
     
+}
+
+#user-profile {
+    font-size: .75em;
+    justify-content: center;
+}
+
+#user-signout-div {
+    float: right;
 }
 
 .grid-container {
