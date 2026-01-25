@@ -191,9 +191,22 @@ export async function getEventsForCalendars(
 
 
 export async function getUserCalendars() {
+try {
   console.log("Fetching calendars")
   const response = await gapi.client.calendar.calendarList.list();
   return response.result.items;
+}
+catch(err) {
+    if (err.status === 401) {
+      console.warn("⚠️ Token expired during API call. Re-authenticating...");
+      // Trigger a sign-in and then try again, or redirect to sign-in
+      await signIn({ interactive: true }); 
+      // After signing in again, retry the call once
+      const retryResponse = await gapi.client.calendar.calendarList.list();
+      return retryResponse.result.items;
+    }
+    throw err; // Re-throw if it's a different error (like a 404 or 500)
+}
 }
 
 function maybeReady(resolve) {
