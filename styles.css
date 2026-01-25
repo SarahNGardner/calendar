@@ -1,3 +1,21 @@
+#sign-in-btn {
+    font-size: .75em;
+}
+
+#show-calendar-selector {
+    margin-top:20px;
+    
+}
+
+#user-profile {
+    font-size: .75em;
+    justify-content: center;
+}
+
+#user-signout-div {
+    float: right;
+}
+
 .grid-container {
   display: grid;
   grid-template-columns: 2fr 1fr; /* Two columns, left is twice as wide as right */
@@ -110,7 +128,7 @@ button:hover {
   box-sizing: border-box;
   width: 100%;
   display: flex;
-  justify-content: center;
+  justify-content: left;
   align-items: top;
 }
 
