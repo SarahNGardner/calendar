@@ -6,7 +6,7 @@ import { getEventsForCalendars } from "./calendar_api.js"; // keep this if neede
 export let currentDate = new Date();
 
 export function renderCalendar(date = currentDate) {
-  const daysContainer = document.getElementById("days");
+  const daysContainer = document.getElementById("month-days");
   const monthYear = document.getElementById("month-year");
 
   const year = date.getFullYear();
@@ -47,7 +47,7 @@ export function renderCalendar(date = currentDate) {
 
 export function previousMonth() {
   currentDate.setMonth(currentDate.getMonth() - 1);
-  renderCalendar(currentDate);
+  renderMonth(currentDate);
 }
 
 export function nextMonth() {
@@ -131,6 +131,81 @@ const events = await getEventsForCalendars(
       });
 
       weekDaysContainer.appendChild(dayDiv);
+  }
+}
+
+export async function renderMonth(date = currentDate) {
+  const daysContainer = document.getElementById("month-days");
+  //const weekRange = document.getElementById("week-range");
+  const year = date.getFullYear();
+  const month = date.getMonth();
+    
+  daysContainer.innerHTML = "";
+
+const monthStart = new Date(year, month, 1);
+const monthEnd = new Date(year, month + 1, 0);
+
+
+  //Fetch events
+const events = await getEventsForCalendars(
+  [...selectedCalendarIds],
+  monthStart.toISOString(),
+  monthEnd.toISOString()
+);
+
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const eventsByDate = groupEventsByDate(events);
+
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+      //const day = new Date(startDate);
+      //day.setDate(startDate.getDate() + i);
+
+      const dayDiv = document.createElement("div");
+      dayDiv.classList.add("day-cell");
+
+      const dateLabel = document.createElement("div");
+      dateLabel.textContent = day;
+      dateLabel.classList.add("days");
+      dayDiv.appendChild(dateLabel);
+      
+      const eventsContainer = document.createElement("div");
+      eventsContainer.classList.add("events-container");
+      dayDiv.appendChild(eventsContainer);
+
+        const cellDate = new Date(year, month, day);
+        const key = cellDate.toDateString();
+
+        const dayEvents = eventsByDate[key] || [];
+
+        dayEvents.forEach(event => {
+          const eventDiv = document.createElement("div");
+          eventDiv.classList.add("event");
+          eventDiv.textContent = event.summary || "(No title)";
+          eventsContainer.appendChild(eventDiv);
+        });
+      
+    
+
+      daysContainer.appendChild(dayDiv);
+      
+  /*    
+          const dayDiv = document.createElement("div");
+    dayDiv.textContent = day;
+
+    
+    const today = new Date();
+    if (
+      day === today.getDate() &&
+      month === today.getMonth() &&
+      year === today.getFullYear()
+    ) {
+      dayDiv.classList.add("today");
+    }
+
+    daysContainer.appendChild(dayDiv);
+      */
   }
 }
 
