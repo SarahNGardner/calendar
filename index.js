@@ -26,18 +26,17 @@ document.getElementById("next-week").addEventListener("click", nextWeek);
 //Show Calendars
 document.getElementById("show-calendar-selector").addEventListener("click", showCalendarOptions)
 // Initial default render
-renderCalendar();
+//renderCalendar();
 
 async function bootstrap() {
   await loadGoogleApis();
 
   try {
     await signIn();
-      
+    await initCalendarApi();  // 👈 exactly once  
     signOutBtn.style.display = 'block';
     signOutBtn.onclick = signOut;  
       
-    await initCalendarApi();
     
     // FETCH AND SHOW USER
     const user = await getUserInfo();

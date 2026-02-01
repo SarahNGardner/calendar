@@ -7,12 +7,24 @@ import {
   renderCurrentWeek,
   previousWeek,
   nextWeek,
-  renderWeek
+  renderWeek,
+  getStartOfWeek
 } from "./calendar.js";
 
 import { getUserCalendars } from "./calendar_api.js";
 import { setSelectedCalendars } from "./calendar.js";
 
+let activeView = "monthly"
+let currentDate = new Date();
+let currentWeekStart = getStartOfWeek(new Date());
+
+function setView(view) {
+  activeView = view;
+  toggleView(view);
+
+  if (view === "month") renderCalendar(currentDate);
+  if (view === "week") renderWeek(currentWeekStart);
+}
 
 
 export function toggleColor() {
@@ -42,15 +54,32 @@ export function showCalendarOptions() {
 document.getElementById("monthly").addEventListener("click", () => toggleView("monthly"));
 
 document.getElementById("weekly").addEventListener("click", async () => {
-  toggleView("weekly");
+  //activeView = "week";
+  setView("weekly");
   await renderWeek();
 });
 
+document.getElementById("monthly").addEventListener("click", async () => {
+ // activeView = "month";
+  setView("monthly");
+  await renderCalendar();
+});
+
 document.getElementById("daily").addEventListener("click", () => {
-    toggleView("daily");
+    setView("daily");
     showTodayDate();
 });
 
+export function onCalendarSelectionChanged() {
+  if (activeView === "monthly") {
+    renderCalendar(currentDate);
+  } else if (activeView === "weekly") {
+    renderWeek(currentWeekStart);
+  }
+    else if (activeView === "daily") {
+        console.log("IMPLEMENT THIS LOGIC")
+    }
+}
 
 //calendar selector
 export async function renderCalendarSelector() {

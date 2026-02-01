@@ -172,7 +172,7 @@ export async function getEventsForCalendars(
   timeMin,
   timeMax
 ) {
-  await initCalendarApi();
+  //await initCalendarApi();
   const ids = Array.from(calendarIds);
 
   const requests = calendarIds.map(id =>
