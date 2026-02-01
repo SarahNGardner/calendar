@@ -50,7 +50,14 @@ export async function renderCalendar(date = currentDate) {
       const day = new Date(monthStart);
       day.setDate(monthStart.getDate() + i);
       const dayDiv = document.createElement("div");
+      dayDiv.classList.add("day-cell");
+      const dateLabel = document.createElement("div");
+      
       dayDiv.textContent = day.getDate();
+      
+      dateLabel.classList.add("days");
+      dayDiv.appendChild(dateLabel);
+      
 
     
     const today = new Date();
