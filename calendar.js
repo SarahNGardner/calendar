@@ -1,5 +1,5 @@
 // calendar.js
-import { getEventsForCalendars } from "./calendar_api.js"; // keep this if needed
+import { getEventsForCalendars, calendarColorMap } from "./calendar_api.js"; // keep this if needed
 import { onCalendarSelectionChanged} from "./ui.js";
 
 // ---------- MONTHLY CALENDAR ----------
@@ -27,7 +27,7 @@ export async function renderCalendar(date = currentDate) {
     
     
   const events = await getEventsForCalendars(
-    [...selectedCalendarIds],
+    [...selectedCalendarIds,],
     monthStart.toISOString(),
     monthEnd.toISOString()
   );
@@ -76,9 +76,19 @@ export async function renderCalendar(date = currentDate) {
 
       // Render events
       dayEvents.forEach(event => {
+        const calendarId =
+            event.organizer?.email ||
+            event.creator?.email;
+
+        const colors = calendarColorMap.get(calendarId);
+        //console.log(colors)
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("event");
         eventDiv.textContent = event.summary || "(No title)";
+        if (colors) {
+            eventDiv.style.backgroundColor = colors.bg;
+            eventDiv.style.color = colors.fg;
+        }
         dayDiv.appendChild(eventDiv);
       });
 
@@ -166,9 +176,18 @@ const events = await getEventsForCalendars(
 
       // Render events
       dayEvents.forEach(event => {
+        const calendarId =
+            event.organizer?.email ||
+            event.creator?.email;
+        const colors = calendarColorMap.get(calendarId);
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("event");
+          
         eventDiv.textContent = event.summary || "(No title)";
+        if (colors) {
+            eventDiv.style.backgroundColor = colors.bg;
+            eventDiv.style.color = colors.fg;
+        }
         dayDiv.appendChild(eventDiv);
       });
 

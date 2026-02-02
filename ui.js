@@ -82,12 +82,12 @@ export function onCalendarSelectionChanged() {
 }
 
 //calendar selector
-export async function renderCalendarSelector() {
+export async function renderCalendarSelector(calendars) {
   console.log("ENTER RENDER CALENDAR SELECTOR")
   const container = document.getElementById("calendar-selector");
   container.innerHTML = "";
 
-  const calendars = await getUserCalendars();
+  //const calendars = await getUserCalendars();
   console.log("getting calendars")
 
   calendars.forEach(cal => {

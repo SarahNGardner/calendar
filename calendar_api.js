@@ -194,7 +194,12 @@ export async function getUserCalendars() {
 try {
   console.log("Fetching calendars")
   const response = await gapi.client.calendar.calendarList.list();
-  return response.result.items;
+  return response.result.items.map(cal => ({
+    id: cal.id,
+    summary: cal.summary,
+    backgroundColor: cal.backgroundColor,
+    foregroundColor: cal.foregroundColor
+  }));
 }
 catch(err) {
     if (err.status === 401) {
@@ -209,6 +214,49 @@ catch(err) {
 }
 }
 
+export const calendarColorMap = new Map();
+
+export function buildCalendarColorMap(calendars) {
+  calendarColorMap.clear();
+
+  calendars.forEach(cal => {
+    calendarColorMap.set(cal.id, {
+      bg: cal.backgroundColor,
+      fg: cal.foregroundColor
+    });
+  });
+}
+/*
+export let eventColors = {};
+export let calendarColors = {};
+
+export async function loadColorDefinitions() {
+  const res = await gapi.client.calendar.colors.get();
+  eventColors = res.result.event;
+  calendarColors = res.result.calendar;
+}
+
+function getEventColors(event) {
+  // 1️⃣ Event color override
+  if (event.colorId && eventColors[event.colorId]) {
+    return {
+      bg: eventColors[event.colorId].background,
+      fg: eventColors[event.colorId].foreground
+    };
+  }
+
+  // 2️⃣ Calendar color
+  const calendarColors = calendarColorMap.get(event.organizer?.email || event.calendarId);
+  if (calendarColors) return calendarColors;
+
+  // 3️⃣ Default
+  return {
+    bg: "#4285f4",
+    fg: "#fff"
+  };
+}
+
+*/
 function maybeReady(resolve) {
   if (gapiLoaded && gisLoaded) resolve();
 }
