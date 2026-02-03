@@ -10,7 +10,7 @@ import {
 
 const signOutBtn = document.getElementById('google-signout');
 
-import { loadGoogleApis, signInWithGoogle, signIn, initCalendarApi, getUserInfo, signOut} from "./calendar_api.js";
+import { loadGoogleApis, signInWithGoogle, signIn, initCalendarApi, getUserInfo, signOut, buildCalendarColorMap, getUserCalendars} from "./calendar_api.js";
 import { renderCalendarSelector, showCalendarOptions } from "./ui.js";
 
 
@@ -26,18 +26,17 @@ document.getElementById("next-week").addEventListener("click", nextWeek);
 //Show Calendars
 document.getElementById("show-calendar-selector").addEventListener("click", showCalendarOptions)
 // Initial default render
-renderCalendar();
+//renderCalendar();
 
 async function bootstrap() {
   await loadGoogleApis();
 
   try {
     await signIn();
-      
+    await initCalendarApi();  // 👈 exactly once  
     signOutBtn.style.display = 'block';
     signOutBtn.onclick = signOut;  
-      
-    await initCalendarApi();
+    const calendars = await getUserCalendars();  
     
     // FETCH AND SHOW USER
     const user = await getUserInfo();
@@ -49,7 +48,9 @@ async function bootstrap() {
        // Example: document.getElementById('user-display').innerText = `Hello, ${user.given_name}`;
     }
 
-    await renderCalendarSelector();
+    await renderCalendarSelector(calendars);
+
+    await buildCalendarColorMap(calendars);  
     //hideSignInButton();
   } catch (err) {
     console.log("ℹ️ Not signed in yet", err);

@@ -130,6 +130,7 @@ button:hover {
   display: flex;
   justify-content: left;
   align-items: top;
+  
 }
 
 
@@ -203,24 +204,23 @@ button:hover {
   text-overflow: ellipsis;
 }
 
+.view-container {
+  position: relative;
+  width: 400px;
+  height: 200px;
+  border: 1px solid #ccc;
+  margin-top: 1rem;
+  overflow: hidden; 
+}
 
-  .view-container {
-      position: relative;
-      width: 400px;
-      height: 200px;
-      border: 1px solid #ccc;
-      margin-top: 1rem;
-      overflow: hidden; 
-    }
-
-    .view {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-      padding: 1rem;
-      box-sizing: border-box;
-      background: #f9f9f9;
-      display: none; 
-    } 
+.view {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  padding: 1rem;
+  box-sizing: border-box;
+  background: #f9f9f9;
+  display: none; 
+} 

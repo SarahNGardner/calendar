@@ -1,35 +1,63 @@
 // calendar.js
-import { getEventsForCalendars } from "./calendar_api.js"; // keep this if needed
+import { getEventsForCalendars, calendarColorMap } from "./calendar_api.js"; // keep this if needed
+import { onCalendarSelectionChanged} from "./ui.js";
 
 // ---------- MONTHLY CALENDAR ----------
 
 export let currentDate = new Date();
 
-export function renderCalendar(date = currentDate) {
-  const daysContainer = document.getElementById("days");
+export async function renderCalendar(date = currentDate) {
+  const daysContainer = document.getElementById("month-days");
   const monthYear = document.getElementById("month-year");
 
   const year = date.getFullYear();
   const month = date.getMonth();
-
-  const firstDay = new Date(year, month, 1);
-  const lastDay = new Date(year, month + 1, 0);
-
+    
   const monthName = date.toLocaleString("default", { month: "long" });
   monthYear.textContent = `${monthName} ${year}`;
 
   daysContainer.innerHTML = "";
 
+    
+  const monthStart = new Date(year, month, 1);
+  //monthStart.setHours(0, 0, 0, 0);
+
+  const monthEnd = new Date(year, month + 1, 0);
+  monthEnd.setHours(23, 59, 59, 999);  
+    
+    
+  const events = await getEventsForCalendars(
+    [...selectedCalendarIds,],
+    monthStart.toISOString(),
+    monthEnd.toISOString()
+  );
+
+  console.log("Selected calendars:", [...selectedCalendarIds]);
+
+  console.log("Google events:", events);
+    
+   const eventsByDate = groupEventsByDate(events);
+
+    
   // Leading blanks
-  for (let i = 0; i < firstDay.getDay(); i++) {
+  for (let i = 0; i < monthStart.getDay(); i++) {
     const blank = document.createElement("div");
     daysContainer.appendChild(blank);
   }
 
   // Actual days
-  for (let day = 1; day <= lastDay.getDate(); day++) {
-    const dayDiv = document.createElement("div");
-    dayDiv.textContent = day;
+  for (let i = 0; i < monthEnd.getDate(); i++) {
+      const day = new Date(monthStart);
+      day.setDate(monthStart.getDate() + i);
+      const dayDiv = document.createElement("div");
+      dayDiv.classList.add("day-cell");
+      const dateLabel = document.createElement("div");
+      
+      dayDiv.textContent = day.getDate();
+      
+      dateLabel.classList.add("days");
+      dayDiv.appendChild(dateLabel);
+      
 
     
     const today = new Date();
@@ -40,8 +68,32 @@ export function renderCalendar(date = currentDate) {
     ) {
       dayDiv.classList.add("today");
     }
+      
+    const dayEvents = events.filter(event => {
+        const eventStart = new Date(event.start.dateTime || event.start.date);
+        return eventStart.toDateString() === day.toDateString();
+      });
+
+      // Render events
+      dayEvents.forEach(event => {
+        const calendarId =
+            event.organizer?.email ||
+            event.creator?.email;
+
+        const colors = calendarColorMap.get(calendarId);
+        //console.log(colors)
+        const eventDiv = document.createElement("div");
+        eventDiv.classList.add("event");
+        eventDiv.textContent = event.summary || "(No title)";
+        if (colors) {
+            eventDiv.style.backgroundColor = colors.bg;
+            eventDiv.style.color = colors.fg;
+        }
+        dayDiv.appendChild(eventDiv);
+      });
 
     daysContainer.appendChild(dayDiv);
+
   }
 }
 
@@ -124,13 +176,97 @@ const events = await getEventsForCalendars(
 
       // Render events
       dayEvents.forEach(event => {
+        const calendarId =
+            event.organizer?.email ||
+            event.creator?.email;
+        const colors = calendarColorMap.get(calendarId);
         const eventDiv = document.createElement("div");
         eventDiv.classList.add("event");
+          
         eventDiv.textContent = event.summary || "(No title)";
+        if (colors) {
+            eventDiv.style.backgroundColor = colors.bg;
+            eventDiv.style.color = colors.fg;
+        }
         dayDiv.appendChild(eventDiv);
       });
 
       weekDaysContainer.appendChild(dayDiv);
+  }
+}
+
+export async function renderMonth(date = currentDate) {
+  const daysContainer = document.getElementById("month-days");
+  //const weekRange = document.getElementById("week-range");
+  const year = date.getFullYear();
+  const month = date.getMonth();
+    
+  daysContainer.innerHTML = "";
+
+const monthStart = new Date(year, month, 1);
+const monthEnd = new Date(year, month + 1, 0);
+
+
+  //Fetch events
+const events = await getEventsForCalendars(
+  [...selectedCalendarIds],
+  monthStart.toISOString(),
+  monthEnd.toISOString()
+);
+
+
+  const firstDay = new Date(year, month, 1);
+  const lastDay = new Date(year, month + 1, 0);
+  const eventsByDate = groupEventsByDate(events);
+
+  for (let day = 1; day <= lastDay.getDate(); day++) {
+      //const day = new Date(startDate);
+      //day.setDate(startDate.getDate() + i);
+
+      const dayDiv = document.createElement("div");
+      dayDiv.classList.add("day-cell");
+
+      const dateLabel = document.createElement("div");
+      dateLabel.textContent = day;
+      dateLabel.classList.add("days");
+      dayDiv.appendChild(dateLabel);
+      
+      const eventsContainer = document.createElement("div");
+      eventsContainer.classList.add("events-container");
+      dayDiv.appendChild(eventsContainer);
+
+        const cellDate = new Date(year, month, day);
+        const key = cellDate.toDateString();
+
+        const dayEvents = eventsByDate[key] || [];
+
+        dayEvents.forEach(event => {
+          const eventDiv = document.createElement("div");
+          eventDiv.classList.add("event");
+          eventDiv.textContent = event.summary || "(No title)";
+          eventsContainer.appendChild(eventDiv);
+        });
+      
+    
+
+      daysContainer.appendChild(dayDiv);
+      
+  /*    
+          const dayDiv = document.createElement("div");
+    dayDiv.textContent = day;
+
+    
+    const today = new Date();
+    if (
+      day === today.getDate() &&
+      month === today.getMonth() &&
+      year === today.getFullYear()
+    ) {
+      dayDiv.classList.add("today");
+    }
+
+    daysContainer.appendChild(dayDiv);
+      */
   }
 }
 
@@ -174,5 +310,5 @@ export function setSelectedCalendars() {
     ).map(cb => cb.value)
   );
 
-  renderWeek(); // refresh view
+  onCalendarSelectionChanged();
 }
