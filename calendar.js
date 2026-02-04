@@ -33,6 +33,19 @@ export async function renderCalendar(date = currentDate) {
     monthStart.toISOString(),
     monthEnd.toISOString()
   );
+    
+events.sort((a, b) => {
+  const A = getEventSortValue(a);
+  const B = getEventSortValue(b);
+
+  // All-day events always first
+  if (A.allDay && !B.allDay) return -1;
+  if (!A.allDay && B.allDay) return 1;
+
+  // Both timed → compare start time
+  return A.time - B.time;
+});
+
 
   console.log("Selected calendars:", [...selectedCalendarIds]);
 
@@ -153,6 +166,18 @@ const events = await getEventsForCalendars(
   startDate.toISOString(),
   endDate.toISOString()
 );
+    
+  events.sort((a, b) => {
+  const A = getEventSortValue(a);
+  const B = getEventSortValue(b);
+
+  // All-day events always first
+  if (A.allDay && !B.allDay) return -1;
+  if (!A.allDay && B.allDay) return 1;
+
+  // Both timed → compare start time
+  return A.time - B.time;
+});
 
   console.log("Selected calendars:", [...selectedCalendarIds]);
 
@@ -330,4 +355,20 @@ function getEventDateKey(event) {
   return new Date(event.start.dateTime)
     .toISOString()
     .split("T")[0];
+}
+
+function getEventSortValue(event) {
+  // All-day events → force them to the top
+  if (event.start.date) {
+    return {
+      allDay: true,
+      time: 0
+    };
+  }
+
+  // Timed events
+  return {
+    allDay: false,
+    time: new Date(event.start.dateTime).getTime()
+  };
 }
