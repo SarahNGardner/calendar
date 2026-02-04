@@ -6,6 +6,8 @@ import { onCalendarSelectionChanged} from "./ui.js";
 
 export let currentDate = new Date();
 
+
+//!!!!! MONTH VIEW !!!!!
 export async function renderCalendar(date = currentDate) {
   const daysContainer = document.getElementById("month-days");
   const monthYear = document.getElementById("month-year");
@@ -70,8 +72,11 @@ export async function renderCalendar(date = currentDate) {
     }
       
     const dayEvents = events.filter(event => {
-        const eventStart = new Date(event.start.dateTime || event.start.date);
-        return eventStart.toDateString() === day.toDateString();
+        const eventDateKey = getEventDateKey(event);
+        const dayKey = day.toISOString().split("T")[0];
+
+        return eventDateKey === dayKey;
+        
       });
 
       // Render events
@@ -170,8 +175,10 @@ const events = await getEventsForCalendars(
 
       // Filter events for this day
       const dayEvents = events.filter(event => {
-        const eventStart = new Date(event.start.dateTime || event.start.date);
-        return eventStart.toDateString() === day.toDateString();
+        const eventDateKey = getEventDateKey(event);
+        const dayKey = day.toISOString().split("T")[0];
+
+        return eventDateKey === dayKey;
       });
 
       // Render events
@@ -311,4 +318,16 @@ export function setSelectedCalendars() {
   );
 
   onCalendarSelectionChanged();
+}
+        
+function getEventDateKey(event) {
+  if (event.start.date) {
+    // All-day event → treat as local date
+    return event.start.date; // "YYYY-MM-DD"
+  }
+
+  // Timed event
+  return new Date(event.start.dateTime)
+    .toISOString()
+    .split("T")[0];
 }
