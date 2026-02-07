@@ -220,6 +220,10 @@ const events = await getEventsForCalendars(
             eventDiv.style.backgroundColor = colors.bg;
             eventDiv.style.color = colors.fg;
         }
+        eventDiv.addEventListener("click", (e) => {
+    e.stopPropagation(); // prevents day click conflicts
+    openEventModal(event);
+  });
         dayDiv.appendChild(eventDiv);
       });
 
@@ -372,3 +376,33 @@ function getEventSortValue(event) {
     time: new Date(event.start.dateTime).getTime()
   };
 }
+
+function openEventModal(event) {
+  const modal = document.getElementById("event-modal");
+  const title = modal.querySelector(".event-title");
+  const time = modal.querySelector(".event-time");
+  const desc = modal.querySelector(".event-description");
+  const calendar = modal.querySelector(".event-calendar");
+
+  title.textContent = event.summary || "(No title)";
+  desc.textContent = event.description || "No description";
+
+  calendar.textContent =
+    event.organizer?.displayName ||
+    event.organizer?.email ||
+    "Unknown calendar";
+
+  // Time handling
+  if (event.start.date) {
+    time.textContent = "All day";
+  } else {
+    const start = new Date(event.start.dateTime);
+    const end = new Date(event.end.dateTime);
+    time.textContent =
+      `${start.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })} – ` +
+      `${end.toLocaleTimeString([], { hour: "numeric", minute: "2-digit" })}`;
+  }
+
+  modal.hidden = false;
+}
+

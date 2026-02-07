@@ -37,9 +37,9 @@ async function bootstrap() {
     signOutBtn.style.display = 'block';
     signOutBtn.onclick = signOut;  
     const calendars = await getUserCalendars();  
-    
     // FETCH AND SHOW USER
     const user = await getUserInfo();
+      
     if (user) {
        console.log(`Signed in as: ${user.name} (${user.email})`);
        const profileContainer = document.getElementById('user-profile');
@@ -54,6 +54,7 @@ async function bootstrap() {
     //hideSignInButton();
   } catch (err) {
     console.log("ℹ️ Not signed in yet", err);
+    
     //showSignInButton();
   }
 }
